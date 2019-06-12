@@ -136,11 +136,13 @@ export default class CitiOAuth {
     const url = 'https://sandbox.apihub.citi.com/gcb/api/v1/customers/profiles'
 
     return wrapper(axios.get)(url, {
-      Accept: 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      uuid: uuid(),
-      client_id: this.appId,
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        uuid: uuid(),
+        client_id: this.appId,
+      },
     })
   }
 
