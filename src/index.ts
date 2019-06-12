@@ -152,7 +152,7 @@ export default class CitiOAuth {
   private async processAccessToken(url: string, info) {
     const time = new Date().getTime()
 
-    const tokenResult = await wrapper(axios.post)(url, info, {
+    const tokenResult = await wrapper(axios.post)(url, querystring.stringify(info), {
       headers: {
         Accept: 'application/json',
         Authorization: `Basic ${Buffer.from(`${this.appId}:${this.appSecret}`).toString('base64')}`,

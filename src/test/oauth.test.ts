@@ -131,7 +131,7 @@ describe('citi oauth', () => {
         assert(result === undefined)
       } catch (ex) {
         assert(ex.name === 'CitiAPIError')
-        assert(ex.message.startsWith('Request failed with status code 500'))
+        assert(ex.message.startsWith('Request failed with status code'))
       }
     })
 
