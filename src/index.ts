@@ -111,8 +111,8 @@ export default class CitiOAuth {
     })
   }
 
-  public async getAccessToken(code: string) {
-    const url = 'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/token/sg/gcb'
+  public async getAccessToken(code: string, countryCode: string = 'sg') {
+    const url = `https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/token/${countryCode}/gcb`
     const info = {
       grant_type: 'authorization_code',
       code,
@@ -139,15 +139,15 @@ export default class CitiOAuth {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         uuid: uuid(),
         client_id: this.appId,
       },
     })
   }
 
-  public async getUserByCode(code: string) {
-    const accessToken = await this.getAccessToken(code)
+  public async getUserByCode(code: string, countryCode: string = 'sg') {
+    const accessToken = await this.getAccessToken(code, countryCode)
     return this.getUserByAccessToken(accessToken.access_token)
   }
 
