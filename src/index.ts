@@ -112,7 +112,7 @@ export default class CitiOAuth {
   }
 
   public async getAccessToken(code: string) {
-    const url = 'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/token/us/gcb'
+    const url = 'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/token/sg/gcb'
     const info = {
       grant_type: 'authorization_code',
       code,
