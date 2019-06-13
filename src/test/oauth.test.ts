@@ -27,7 +27,7 @@ describe('citi oauth', () => {
       const url = auth.getAuthorizeURL('hehe')
       assert(
         url ===
-          `https://sandbox.apihub.citi.com/GCB/api/authCode/oauth2/authorize?response_type=code&client_id=${
+          `https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/authorize?response_type=code&client_id=${
             config.appid
           }&scope=pay_with_points&countryCode=SG&businessCode=GCB&locale=en_US&state=${'hehe'}&redirect_uri=${encodeURIComponent(
             'http://diveintonode.org/',
@@ -39,7 +39,7 @@ describe('citi oauth', () => {
       const url = auth.getAuthorizeURL('hehe', 'pay_with_points')
       assert(
         url ===
-          `https://sandbox.apihub.citi.com/GCB/api/authCode/oauth2/authorize?response_type=code&client_id=${
+          `https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/authorize?response_type=code&client_id=${
             config.appid
           }&scope=${'pay_with_points'}&countryCode=SG&businessCode=GCB&locale=en_US&state=${'hehe'}&redirect_uri=${encodeURIComponent(
             'http://diveintonode.org/',
