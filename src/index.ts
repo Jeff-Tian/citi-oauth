@@ -3,14 +3,21 @@ import * as querystring from 'querystring'
 import uuid from 'uuid/v4'
 import { wrapper } from './util'
 
-function getAuthorizeURL(parameters: { redirect: string; scope?: string; state?: string; url: string; appId: string }) {
-  const { redirect, scope, state, url, appId } = parameters
+function getAuthorizeURL(parameters: {
+  redirect: string
+  scope?: string
+  state?: string
+  url: string
+  appId: string
+  countryCode: string
+}) {
+  const { redirect, scope, state, url, appId, countryCode } = parameters
   const info: any = {
     response_type: 'code',
     client_id: appId,
     scope: scope || 'pay_with_points',
-    countryCode: 'US',
-    businessCode: 'GCB',
+    countryCode: (countryCode || 'sg').toLowerCase(),
+    businessCode: 'GCB'.toLowerCase(),
     locale: 'en_US',
     state: state || '',
     redirect_uri: redirect,
@@ -97,7 +104,7 @@ export default class CitiOAuth {
     }
   }
 
-  public getAuthorizeURL(state?: string, scope?: string) {
+  public getAuthorizeURL(state?: string, scope?: string, countryCode: string = 'sg') {
     if (!state) {
       throw new TypeError('state 为必填字段！')
     }
@@ -108,6 +115,7 @@ export default class CitiOAuth {
       state,
       url: 'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/authorize',
       appId: this.appId,
+      countryCode,
     })
   }
 
