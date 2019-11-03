@@ -1,33 +1,41 @@
-import { wrapper } from "./util"
 import axios from 'axios'
 import querystring from 'querystring'
 import CitiOAuth from "."
 import uuid from 'uuid/v4'
 
 export default class CitiReward {
-    citi: any;
+    citi: CitiOAuth;
     constructor(citi: CitiOAuth) {
         this.citi = citi;
     }
-    public async getPointBalance() {
-        const url = `https://sandbox.apihub.citi.com/gcb/api/v1/rewards/pointBalance`
-        const qs = {
-            cloakedCreditCardNumber: 'REPLACE_THIS_VALUE',
-            merchantCode: 'REPLACE_THIS_VALUE',
+
+    public async createLinkCode() {
+
+    }
+
+    public async getPointBalance(countryCode: string = 'US', cloakedCreditCardNumber?: string) {
+        const url = `/v1/rewards/pointBalance`
+        const qs: any = {
+            cloakedCreditCardNumber,
+            merchantCode: 'FLOWR',
             rewardProgram: 'THANKU',
-            rewardLinkCode: 'REPLACE_THIS_VALUE'
         }
+
+        if (!cloakedCreditCardNumber) {
+            qs.rewardLinkCode = '998OB390B502W4G4PQIMGP8P4155378GM4SQ3ORF418134ST'
+        }
+
         const headers = {
             accept: 'application/json',
-            'accept-language': 'en',
-            authorization: `Bearer ${this.citi.accessToken}`,
+            'accept-language': 'en-us',
+            authorization: `Bearer ${(await this.citi.getClientAccessToken(countryCode)).access_token}`,
             businesscode: 'GCB',
-            countrycode: 'US',
+            countrycode: countryCode,
             'content-type': 'application/json',
             uuid: uuid(),
             client_id: this.citi.appId
         }
 
-        return await wrapper(axios.get)(url, querystring.stringify(qs), { headers })
+        return await this.citi.wrap(axios.get)(url + '?' + querystring.stringify(qs), { headers })
     }
 }

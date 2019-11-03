@@ -77,8 +77,8 @@ export class AccessToken implements IAccessToken {
 
 export default class CitiOAuth {
   public Reward: CitiReward
-  public readonly getToken: (openId: string) => any
-  private readonly appId: string
+  public readonly getToken: (openId?: string) => any
+  public readonly appId: string
   private readonly appSecret: string
   private readonly saveToken!: (openid: string, token: object) => void
   private readonly store: any
@@ -91,7 +91,7 @@ export default class CitiOAuth {
     appSecret: string,
     redirectUri: string,
     saveToken?: (openid: string, token: object) => void,
-    getToken?: (openId: string) => any,
+    getToken?: (openId?: string) => any,
     logger: ILogger = console,
   ) {
     this.appId = appId
@@ -100,8 +100,8 @@ export default class CitiOAuth {
     this.logger = logger
     this.redirectUri = redirectUri
     this.getToken = !getToken
-      ? (openId: string) => {
-        return this.store[openId]
+      ? (openId: string | undefined) => {
+        return this.store[openId || '']
       }
       : getToken
 
@@ -210,5 +210,9 @@ export default class CitiOAuth {
     }
 
     return accessToken
+  }
+
+  public wrap(requestFunc: (url: string, data?: any, options?: any) => Promise<any>) {
+    return wrapper(requestFunc, { endpoint: this.endpoint })
   }
 }
