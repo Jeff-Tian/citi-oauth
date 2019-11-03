@@ -2,6 +2,7 @@ import axios from 'axios'
 import * as querystring from 'querystring'
 import uuid from 'uuid/v4'
 import { wrapper } from './util'
+import CitiReward from './reward'
 
 function getAuthorizeURL(parameters: {
   redirect: string
@@ -66,6 +67,7 @@ export class AccessToken implements IAccessToken {
 }
 
 export default class CitiOAuth {
+  public Reward: CitiReward
   public readonly getToken: (openId: string) => any
   private readonly appId: string
   private readonly appSecret: string
@@ -89,8 +91,8 @@ export default class CitiOAuth {
     this.redirectUri = redirectUri
     this.getToken = !getToken
       ? (openId: string) => {
-          return this.store[openId]
-        }
+        return this.store[openId]
+      }
       : getToken
 
     if (!saveToken && (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod')) {
@@ -102,6 +104,8 @@ export default class CitiOAuth {
         this.store[openid] = token
       }
     }
+
+    this.Reward = new CitiReward(this)
   }
 
   public getAuthorizeURL(state?: string, scope?: string, countryCode: string = 'sg') {

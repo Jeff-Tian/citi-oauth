@@ -30,7 +30,6 @@ build/Release
 node_modules
 
 yarn.lock
-package-lock.json
 settings.js
 protos/protos.zip
 

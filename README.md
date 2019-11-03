@@ -16,6 +16,8 @@
 
 - OAuth 授权
 - 获取基本信息
+- 获取积分余额
+- 充积分
 
 详细参见 [API 文档](https://sandbox.developerhub.citi.com/api/)
 
