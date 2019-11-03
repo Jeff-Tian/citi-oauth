@@ -26,7 +26,7 @@ export const wrapper = (requestFunc: (url: string, data?: any, options?: any) =>
     } catch (err) {
       console.error('碰到了错误！')
       err.request = {}
-      err.response = {}
+      err.response = { data: err.response.data }
       console.error(err)
       if (!(err instanceof CitiAPIError)) {
         err.name = 'CitiAPI' + err.name

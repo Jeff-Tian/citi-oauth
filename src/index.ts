@@ -40,6 +40,9 @@ interface IAccessToken {
   expires_in: number
   refresh_token: string
   scope: string
+  token_type?: string
+  consented_on?: number
+  refresh_token_expires_in?: number
 }
 
 export class AccessToken implements IAccessToken {
@@ -48,6 +51,9 @@ export class AccessToken implements IAccessToken {
   public readonly expires_in: number
   public readonly refresh_token: string
   public readonly scope: string
+  public readonly token_type: string | undefined
+  public readonly consented_on: number | undefined
+  public readonly refresh_token_expires_in: number | undefined
 
   constructor(data: IAccessToken) {
     this.access_token = data.access_token
@@ -55,6 +61,9 @@ export class AccessToken implements IAccessToken {
     this.expires_in = data.expires_in
     this.refresh_token = data.refresh_token
     this.scope = data.scope
+    this.token_type = data.token_type
+    this.consented_on = data.consented_on
+    this.refresh_token_expires_in = data.refresh_token_expires_in
 
     Object.keys(data).map(k => (this[k] = data[k]))
   }
@@ -136,11 +145,11 @@ export default class CitiOAuth {
     return this.processAccessToken(url, info)
   }
 
-  public async getClientAccessToken(countryCode: string = 'sg') {
+  public async getClientAccessToken(countryCode: string = 'sg', scope: string = '/api') {
     const url = `/clientCredentials/oauth2/token/${countryCode}/gcb`
     const info = {
       grant_type: 'client_credentials',
-      scope: 'pay_with_points accounts_details_transactions'
+      scope
     }
 
     return this.processAccessToken(url, info)
