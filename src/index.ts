@@ -75,6 +75,7 @@ export default class CitiOAuth {
   private readonly store: any
   private logger: ILogger
   private readonly redirectUri: string
+  endpoint: string
 
   constructor(
     appId: string,
@@ -105,6 +106,7 @@ export default class CitiOAuth {
       }
     }
 
+    this.endpoint = 'https://sandbox.apihub.citi.com/gcb/api'
     this.Reward = new CitiReward(this)
   }
 
@@ -129,6 +131,16 @@ export default class CitiOAuth {
       grant_type: 'authorization_code',
       code,
       redirect_uri: this.redirectUri,
+    }
+
+    return this.processAccessToken(url, info)
+  }
+
+  public async getClientAccessToken(countryCode: string = 'sg') {
+    const url = `/clientCredentials/oauth2/token/${countryCode}/gcb`
+    const info = {
+      grant_type: 'client_credentials',
+      scope: 'pay_with_points accounts_details_transactions'
     }
 
     return this.processAccessToken(url, info)
@@ -163,15 +175,18 @@ export default class CitiOAuth {
     return this.getUserByAccessToken(accessToken.access_token)
   }
 
-  private async processAccessToken(url: string, info) {
+  private async processAccessToken(url: string, info: any, options?: {}) {
     const time = new Date().getTime()
 
-    const tokenResult = await wrapper(axios.post)(url, querystring.stringify(info), {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Basic ${Buffer.from(`${this.appId}:${this.appSecret}`).toString('base64')}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+    const tokenResult = await wrapper(axios.post, { endpoint: this.endpoint })(url, querystring.stringify(info), {
+      ...{
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Basic ${Buffer.from(`${this.appId}:${this.appSecret}`).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       },
+      ...options
     })
 
     const accessToken = new AccessToken({

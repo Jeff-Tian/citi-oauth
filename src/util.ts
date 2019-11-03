@@ -9,10 +9,10 @@ class CitiAPIError extends Error {
   }
 }
 
-export const wrapper = (requestFunc: (url: string, data?: any, options?: object) => Promise<any>) => {
-  return async (url: string, data?: any, options?: object) => {
+export const wrapper = (requestFunc: (url: string, data?: any, options?: any) => Promise<any>, settings?: any) => {
+  return async (url: string, data?: any, options?: any) => {
     try {
-      const { data: res } = await requestFunc(url, data, options)
+      const { data: res } = await requestFunc(url.startsWith('http') ? url : `${settings.endpoint}${url}`, data, options)
 
       if (res.errcode) {
         const error = new CitiAPIError(res.errmsg)
@@ -25,6 +25,8 @@ export const wrapper = (requestFunc: (url: string, data?: any, options?: object)
       return res
     } catch (err) {
       console.error('碰到了错误！')
+      err.request = {}
+      err.response = {}
       console.error(err)
       if (!(err instanceof CitiAPIError)) {
         err.name = 'CitiAPI' + err.name
