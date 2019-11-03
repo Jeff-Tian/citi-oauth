@@ -1,6 +1,6 @@
 {
   "name": "citi-oauth",
-  "version": "0.2.2",
+  "version": "0.0.0-development",
   "description": "citi oauth typescript version",
   "main": "lib/index.js",
   "directories": {
@@ -11,11 +11,13 @@
     "test": "TS_NODE_TRANSPILE_ONLY=1 mocha --require espower-typescript/guess --timeout 10000 --exit 'src/test/*.test.ts'",
     "test:coverage": "TS_NODE_COMPILER_OPTIONS='{\"target\":\"es6\"}' nyc npm test",
     "build": "tsc -p tsconfig.json",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "semantic-release": "semantic-release",
+    "postinstall": "echo Thank you for using citi-oauth!\n\nThe project needs your help! Please consider supporting of citi-oauth on Patreon:\n> https://www.patreon.com/jeff_tian"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Jeff-Tian/citi-oauth.git"
+    "url": "https://github.com/Jeff-Tian/citi-oauth"
   },
   "author": "jeff.tian@outlook.com",
   "license": "ISC",
@@ -44,7 +46,8 @@
     "tslint-config-prettier": "^1.17.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typemoq": "latest",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "semantic-release": "^15.13.30"
   },
   "types": "lib/index.d.ts",
   "nyc": {

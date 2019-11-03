@@ -5,8 +5,8 @@ import MockAdapter from 'axios-mock-adapter'
 import * as TypeMoq from 'typemoq'
 
 describe('citi points', () => {
-    describe('get balance error', () => {
-        const auth = new CitiOAuth('appid', 'appsecret', 'http://diveintonode.org/')
+    describe.skip('get balance error', () => {
+        const auth = new CitiOAuth('demoapp', 'appsecret', 'http://diveintonode.org/')
 
         it('should 401', async () => {
             try {

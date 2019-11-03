@@ -1,8 +1,9 @@
 import axios from 'axios'
-import * as querystring from 'querystring'
+import querystring from 'querystring'
 import uuid from 'uuid/v4'
 import { wrapper } from './util'
 import CitiReward from './reward'
+import _ from 'lodash/fp'
 
 function getAuthorizeURL(parameters: {
   redirect: string
