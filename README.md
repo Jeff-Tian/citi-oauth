@@ -12,6 +12,8 @@
 [download-image]: https://img.shields.io/npm/dm/citi-oauth.svg?style=flat-square
 [download-url]: https://npmjs.org/package/citi-oauth
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Jeff-Tian_citi-oauth)](https://sonarcloud.io/dashboard?id=Jeff-Tian_citi-oauth)
+
 ## 功能列表
 
 - OAuth 授权
@@ -61,7 +63,7 @@ const oauthApi = new CitiOAuth(
     // 这样才能在cluster模式及多机情况下使用，以下为写入到文件的示例
     // 持久化时请注意，每个openid都对应一个唯一的token!
     fs.writeFile(openid + ':access_token.txt', JSON.stringify(token), callback)
-  },
+  }
 )
 ```
 
@@ -84,7 +86,7 @@ const TokenSchema = new Schema({
 
 ```typescript
 TokenSchema.statics.getToken = function(openid, cb) {
-  this.findOne({ openid: openid }, function(err, result) {
+  this.findOne({openid: openid}, function(err, result) {
     if (err) throw err
     return cb(null, result)
   })
@@ -96,8 +98,8 @@ TokenSchema.statics.getToken = function(openid, cb) {
 ```typescript
 TokenSchema.statics.setToken = function(openid, token, cb) {
   // 有则更新，无则添加
-  var query = { openid: openid }
-  var options = { upsert: true }
+  var query = {openid: openid}
+  var options = {upsert: true}
   this.update(query, token, options, function(err, result) {
     if (err) throw err
     return cb(null)
@@ -121,7 +123,7 @@ var client = new OAuth(
   function(openid, token, callback) {
     // 持久化时请注意，每个openid都对应一个唯一的token!
     Token.setToken(openid, token, callback)
-  },
+  }
 )
 ```
 
@@ -165,11 +167,18 @@ var client = new Oauth(
   function(openid, token, callback) {
     var sql =
       'REPLACE INTO token(access_token, expires_in, refresh_token, openid, scope, create_at) VALUES(?, ?, ?, ?, ?, ?)'
-    var fields = [token.access_token, token.expires_in, token.refresh_token, token.openid, token.scope, token.create_at]
+    var fields = [
+      token.access_token,
+      token.expires_in,
+      token.refresh_token,
+      token.openid,
+      token.scope,
+      token.create_at,
+    ]
     db.query(sql, fields, function(err, result) {
       return callback(err)
     })
-  },
+  }
 )
 ```
 
