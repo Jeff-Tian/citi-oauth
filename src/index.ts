@@ -1,9 +1,10 @@
 import axios from 'axios'
 import querystring from 'querystring'
 import uuid from 'uuid/v4'
-import { wrapper } from './util'
+import {wrapper} from './util'
 import CitiReward from './reward'
 import _ from 'lodash/fp'
+import CitiCards from './cards'
 
 function getAuthorizeURL(parameters: {
   redirect: string
@@ -13,7 +14,7 @@ function getAuthorizeURL(parameters: {
   appId: string
   countryCode: string
 }) {
-  const { redirect, scope, state, url, appId, countryCode } = parameters
+  const {redirect, scope, state, url, appId, countryCode} = parameters
   const info: any = {
     response_type: 'code',
     client_id: appId,
@@ -72,7 +73,9 @@ export class AccessToken implements IAccessToken {
   public isValid() {
     const time = new Date().getTime()
 
-    return !!this.access_token && time < this.created_at + this.expires_in * 1000
+    return (
+      !!this.access_token && time < this.created_at + this.expires_in * 1000
+    )
   }
 }
 
@@ -86,6 +89,7 @@ export default class CitiOAuth {
   private logger: ILogger
   private readonly redirectUri: string
   endpoint: string
+  public Cards: CitiCards
 
   constructor(
     appId: string,
@@ -93,7 +97,7 @@ export default class CitiOAuth {
     redirectUri: string,
     saveToken?: (openid: string, token: object) => void,
     getToken?: (openId?: string) => any,
-    logger: ILogger = console,
+    logger: ILogger = console
   ) {
     this.appId = appId
     this.appSecret = appSecret
@@ -102,12 +106,17 @@ export default class CitiOAuth {
     this.redirectUri = redirectUri
     this.getToken = !getToken
       ? (openId: string | undefined) => {
-        return this.store[openId || '']
-      }
+          return this.store[openId || '']
+        }
       : getToken
 
-    if (!saveToken && (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod')) {
-      this.logger.warn(`Please don't save oauth token into memory under production!`)
+    if (
+      !saveToken &&
+      (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod')
+    ) {
+      this.logger.warn(
+        `Please don't save oauth token into memory under production!`
+      )
     }
 
     if (!saveToken) {
@@ -118,9 +127,14 @@ export default class CitiOAuth {
 
     this.endpoint = 'https://sandbox.apihub.citi.com/gcb/api'
     this.Reward = new CitiReward(this)
+    this.Cards = new CitiCards(this)
   }
 
-  public getAuthorizeURL(state?: string, scope?: string, countryCode: string = 'sg') {
+  public getAuthorizeURL(
+    state?: string,
+    scope?: string,
+    countryCode: string = 'sg'
+  ) {
     if (!state) {
       throw new TypeError('state 为必填字段！')
     }
@@ -146,22 +160,20 @@ export default class CitiOAuth {
     return this.processAccessToken(url, info)
   }
 
-  public async getClientAccessToken(countryCode: string = 'sg', scope: string = '/api') {
-    const url = `/clientCredentials/oauth2/token/${countryCode}/gcb`
-    const info = {
-      grant_type: 'client_credentials',
-      scope
-    }
+  public async getClientAccessToken(
+    countryCode: string = 'sg',
+    scope: string = '/api'
+  ) {
+    const url = `/clientCredentials/oauth2/token/${countryCode.toLowerCase()}/gcb`
+    const info = {grant_type: 'client_credentials', scope}
 
     return this.processAccessToken(url, info)
   }
 
   public async refreshAccessToken(refreshToken: string) {
-    const url = 'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/refresh'
-    const info = {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    }
+    const url =
+      'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/refresh'
+    const info = {grant_type: 'refresh_token', refresh_token: refreshToken}
 
     return this.processAccessToken(url, info)
   }
@@ -188,16 +200,22 @@ export default class CitiOAuth {
   private async processAccessToken(url: string, info: any, options?: {}) {
     const time = new Date().getTime()
 
-    const tokenResult = await wrapper(axios.post, { endpoint: this.endpoint })(url, querystring.stringify(info), {
-      ...{
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Basic ${Buffer.from(`${this.appId}:${this.appSecret}`).toString('base64')}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
+    const tokenResult = await wrapper(axios.post, {endpoint: this.endpoint})(
+      url,
+      querystring.stringify(info),
+      {
+        ...{
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Basic ${Buffer.from(
+              `${this.appId}:${this.appSecret}`
+            ).toString('base64')}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
         },
-      },
-      ...options
-    })
+        ...options,
+      }
+    )
 
     const accessToken = new AccessToken({
       created_at: time,
@@ -213,7 +231,11 @@ export default class CitiOAuth {
     return accessToken
   }
 
-  public wrap(requestFunc: (url: string, data?: any, options?: any) => Promise<any>) {
-    return wrapper(requestFunc, { endpoint: this.endpoint })
+  public wrap(
+    requestFunc: (url: string, data?: any, options?: any) => Promise<any>
+  ) {
+    return wrapper(requestFunc, {
+      endpoint: this.endpoint,
+    })
   }
 }
