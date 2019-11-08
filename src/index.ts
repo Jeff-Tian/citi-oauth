@@ -3,7 +3,6 @@ import querystring from 'querystring'
 import uuid from 'uuid/v4'
 import {wrapper} from './util'
 import CitiReward from './reward'
-import _ from 'lodash/fp'
 import CitiCards from './cards'
 
 function getAuthorizeURL(parameters: {
@@ -181,9 +180,11 @@ export default class CitiOAuth {
   }
 
   public async getUserByAccessToken(accessToken: string) {
-    const url = 'https://sandbox.apihub.citi.com/gcb/api/v1/customers/profiles'
+    const url = '/v1/customers/profiles'
 
-    return wrapper(axios.get)(url, {
+    return wrapper(axios.get, {
+      endpoint: this.endpoint,
+    })(url, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
@@ -196,7 +197,18 @@ export default class CitiOAuth {
 
   public async getUserByCode(code: string, countryCode: string = 'sg') {
     const accessToken = await this.getAccessToken(code, countryCode)
-    return this.getUserByAccessToken(accessToken.access_token)
+    const res = await this.getUserByAccessToken(accessToken.access_token)
+
+    try {
+      this.saveToken(
+        res.emails && res.emails ? res.emails[0].emailAddress : '',
+        accessToken
+      )
+    } catch (ex) {
+      this.logger.error('error = ', ex)
+    }
+
+    return res
   }
 
   private async processAccessToken(url: string, info: any, options?: {}) {
@@ -219,18 +231,10 @@ export default class CitiOAuth {
       }
     )
 
-    const accessToken = new AccessToken({
+    return new AccessToken({
       created_at: time,
       ...tokenResult,
     })
-
-    try {
-      this.saveToken(tokenResult.openid, accessToken)
-    } catch (e) {
-      this.logger.error(e)
-    }
-
-    return accessToken
   }
 
   public wrap(
