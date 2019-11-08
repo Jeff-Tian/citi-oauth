@@ -18,7 +18,9 @@ function getAuthorizeURL(parameters: {
   const info: any = {
     response_type: 'code',
     client_id: appId,
-    scope: scope || 'pay_with_points',
+    scope:
+      scope ||
+      'pay_with_points accounts_details_transactions customers_profiles payees personal_domestic_transfers internal_domestic_transfers external_domestic_transfers bill_payments cards onboarding reference_data',
     countryCode: (countryCode || 'sg').toUpperCase(),
     businessCode: 'GCB'.toUpperCase(),
     locale: 'en_US',
