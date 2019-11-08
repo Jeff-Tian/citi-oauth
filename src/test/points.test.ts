@@ -7,27 +7,38 @@ describe('citi points', () => {
   describe('get balance error', () => {
     const auth = new CitiOAuth('xxx', 'yyy', 'http://diveintonode.org/')
 
-    it('should 401', async () => {
+    it('should 404', async () => {
       try {
         await auth.Reward.getPointBalance(
-          'us',
+          'sg',
           'c88b3dbf7f7546c90523fe046ae5aa8639fb2dab2d8e5f4c3cc9351f99ef963086bf854bcaa6924a524a18a6c90817fc21b192c3694180a0a99ae8c1f5e68da0'
         )
         throw new Error('should not be here')
       } catch (ex) {
         assert(ex.name === 'CitiAPIError')
-        assert(ex.message === 'Request failed with status code 401')
+        assert(ex.message === 'Request failed with status code 404')
       }
     })
   })
 
   describe('get balance with mocked results', () => {
     let mock: MockAdapter
+
+    let balance = {
+      isRedemptionEligible: true,
+      availablePointBalance: 0,
+      programConversionRate: 0.008,
+      localCurrencyCode: 'USD',
+      redemptionPointIncrement: 1,
+      maximumPointsToRedeem: 0,
+      minimumPointsToRedeem: 100,
+    }
+
     before(() => {
       mock = new MockAdapter(axios)
       mock
         .onPost(
-          'https://sandbox.apihub.citi.com/gcb/api/clientCredentials/oauth2/token/US/gcb'
+          'https://sandbox.apihub.citi.com/gcb/api/clientCredentials/oauth2/token/sg/gcb'
         )
         .replyOnce(200, {
           access_token:
@@ -44,35 +55,19 @@ describe('citi points', () => {
         .onGet(
           /^https\:\/\/sandbox\.apihub\.citi\.com\/gcb\/api\/v1\/rewards\/pointBalance.+/
         )
-        .replyOnce(200, {
-          isRedemptionEligible: true,
-          availablePointBalance: 0,
-          programConversionRate: 0.008,
-          localCurrencyCode: 'USD',
-          redemptionPointIncrement: 1,
-          maximumPointsToRedeem: 0,
-          minimumPointsToRedeem: 100,
-        })
+        .replyOnce(200, balance)
 
       after(mock.restore)
     })
     const auth = new CitiOAuth('xxx', 'yyy', 'http://diveintonode.org/')
 
-    it('should ', async () => {
+    it('should succeed', async () => {
       const res = await auth.Reward.getPointBalance(
-        'US',
+        'sg',
         'c88b3dbf7f7546c90523fe046ae5aa8639fb2dab2d8e5f4c3cc9351f99ef963086bf854bcaa6924a524a18a6c90817fc21b192c3694180a0a99ae8c1f5e68da0'
       )
 
-      assert.deepStrictEqual(res, {
-        isRedemptionEligible: true,
-        availablePointBalance: 0,
-        programConversionRate: 0.008,
-        localCurrencyCode: 'USD',
-        redemptionPointIncrement: 1,
-        maximumPointsToRedeem: 0,
-        minimumPointsToRedeem: 100,
-      })
+      assert.deepStrictEqual(res, balance)
     })
   })
 })
