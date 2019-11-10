@@ -258,7 +258,7 @@ export default class CitiOAuth {
       client_id: this.appId,
     }
 
-    return await this.wrap(axios[options.method](
+    return await this.wrap(axios[options.method])(
       url + '?' + querystring.stringify(qs),
       { headers }
     )

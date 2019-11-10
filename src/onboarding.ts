@@ -9,9 +9,7 @@ export default class CitiOnboarding {
 
     public async apply(accessToken?: string, countryCode: string = 'sg') {
         const url = `/v1/apac/onboarding/products/unsecured/applications`
-        const qs: any = {
-        }
 
-        return await this.citi.makeClientAuthRequest(url, qs, { method: 'post', accessToken, countryCode })
+        return await this.citi.makeClientAuthRequest(url, {}, { method: 'post', accessToken, countryCode })
     }
 }

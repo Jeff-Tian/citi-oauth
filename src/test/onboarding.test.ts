@@ -25,7 +25,7 @@ describe('citi onboarding', () => {
         const auth = new CitiOAuth('xxx', 'yyy', 'http://diveintonode.org/')
 
         it('should apply', async () => {
-            const res = await auth.Onboarding.apply()
+            const res = await auth.Onboarding.apply('1234')
             assert.deepStrictEqual(res, mockResult)
         })
     })
