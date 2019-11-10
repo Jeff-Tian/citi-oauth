@@ -13,7 +13,7 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
     "semantic-release": "semantic-release",
-    "postinstall": "echo \"Thank you for using citi-oauth!\n\nThe project needs your help! Please consider supporting of citi-oauth on Patreon:\n> https://www.patreon.com/jeff_tian\""
+    "postinstall": "echo \"Thank you for using citi-oauth!\n\nThe project needs your help! Please consider supporting of citi-oauth on Patreon:\n https://www.patreon.com/jeff_tian\""
   },
   "repository": {
     "type": "git",

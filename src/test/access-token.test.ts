@@ -2,7 +2,6 @@ import assert = require('assert')
 import CitiOAuth, { AccessToken } from '../index'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import * as TypeMoq from 'typemoq'
 
 describe('citi access token', () => {
     describe('get client access token', () => {
