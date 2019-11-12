@@ -98,8 +98,8 @@ export default class CitiOAuth {
     appId: string,
     appSecret: string,
     redirectUri: string,
-    saveToken?: (openid: string, token: object) => void,
-    getToken?: (openId?: string) => any,
+    saveToken?: (openid: string, token: object) => Promise<void>,
+    getToken?: (openId?: string) => Promise<any>,
     logger: ILogger = console
   ) {
     this.appId = appId
@@ -109,7 +109,7 @@ export default class CitiOAuth {
     this.redirectUri = redirectUri
     this.getToken = !getToken
       ? (openId: string | undefined) => {
-          return this.store[openId || '']
+          return Promise.resolve(this.store[openId || ''])
         }
       : getToken
 
@@ -125,6 +125,8 @@ export default class CitiOAuth {
     if (!saveToken) {
       this.saveToken = (openid: string, token: object) => {
         this.store[openid] = token
+
+        return Promise.resolve()
       }
     }
 
@@ -203,7 +205,10 @@ export default class CitiOAuth {
     const res = await this.getUserByAccessToken(accessToken.access_token)
 
     try {
-      this.saveToken(res.emails ? res.emails[0].emailAddress : '', accessToken)
+      await this.saveToken(
+        res.emails ? res.emails[0].emailAddress : '',
+        accessToken
+      )
     } catch (ex) {
       this.logger.error('error = ', ex)
     }
