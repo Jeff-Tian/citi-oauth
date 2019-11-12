@@ -204,7 +204,7 @@ export default class CitiOAuth {
 
     try {
       this.saveToken(
-        res.emails && res.emails ? res.emails[0].emailAddress : '',
+        res.emails ? res.emails[0].emailAddress : '',
         accessToken
       )
     } catch (ex) {
