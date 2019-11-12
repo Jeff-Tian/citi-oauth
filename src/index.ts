@@ -113,21 +113,18 @@ export default class CitiOAuth {
         }
       : getToken
 
-    if (
-      !saveToken &&
-      (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod')
-    ) {
+    if (!saveToken) {
       this.logger.warn(
         `Please don't save oauth token into memory under production!`
       )
-    }
 
-    if (!saveToken) {
       this.saveToken = (openid: string, token: object) => {
         this.store[openid] = token
 
         return Promise.resolve()
       }
+    } else {
+      this.saveToken = saveToken
     }
 
     this.endpoint = 'https://sandbox.apihub.citi.com/gcb/api'
