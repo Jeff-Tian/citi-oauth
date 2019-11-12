@@ -1,7 +1,7 @@
 import axios from 'axios'
 import querystring from 'querystring'
 import uuid from 'uuid/v4'
-import { wrapper } from './util'
+import {wrapper} from './util'
 import CitiReward from './reward'
 import CitiCards from './cards'
 import CitiOnboarding from './onboarding'
@@ -14,7 +14,7 @@ function getAuthorizeURL(parameters: {
   appId: string
   countryCode: string
 }) {
-  const { redirect, scope, state, url, appId, countryCode } = parameters
+  const {redirect, scope, state, url, appId, countryCode} = parameters
   const info: any = {
     response_type: 'code',
     client_id: appId,
@@ -86,7 +86,7 @@ export default class CitiOAuth {
   public readonly getToken: (openId?: string) => any
   public readonly appId: string
   private readonly appSecret: string
-  private readonly saveToken!: (openid: string, token: object) => void
+  public readonly saveToken!: (openid: string, token: object) => void
   private readonly store: any
   private logger: ILogger
   private readonly redirectUri: string
@@ -109,8 +109,8 @@ export default class CitiOAuth {
     this.redirectUri = redirectUri
     this.getToken = !getToken
       ? (openId: string | undefined) => {
-        return this.store[openId || '']
-      }
+          return this.store[openId || '']
+        }
       : getToken
 
     if (
@@ -169,7 +169,7 @@ export default class CitiOAuth {
     scope: string = '/api'
   ) {
     const url = `/clientCredentials/oauth2/token/${countryCode.toLowerCase()}/gcb`
-    const info = { grant_type: 'client_credentials', scope }
+    const info = {grant_type: 'client_credentials', scope}
 
     return this.processAccessToken(url, info)
   }
@@ -177,7 +177,7 @@ export default class CitiOAuth {
   public async refreshAccessToken(refreshToken: string) {
     const url =
       'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/refresh'
-    const info = { grant_type: 'refresh_token', refresh_token: refreshToken }
+    const info = {grant_type: 'refresh_token', refresh_token: refreshToken}
 
     return this.processAccessToken(url, info)
   }
@@ -203,10 +203,7 @@ export default class CitiOAuth {
     const res = await this.getUserByAccessToken(accessToken.access_token)
 
     try {
-      this.saveToken(
-        res.emails ? res.emails[0].emailAddress : '',
-        accessToken
-      )
+      this.saveToken(res.emails ? res.emails[0].emailAddress : '', accessToken)
     } catch (ex) {
       this.logger.error('error = ', ex)
     }
@@ -217,7 +214,7 @@ export default class CitiOAuth {
   private async processAccessToken(url: string, info: any, options?: {}) {
     const time = new Date().getTime()
 
-    const tokenResult = await wrapper(axios.post, { endpoint: this.endpoint })(
+    const tokenResult = await wrapper(axios.post, {endpoint: this.endpoint})(
       url,
       querystring.stringify(info),
       {
@@ -248,11 +245,20 @@ export default class CitiOAuth {
     })
   }
 
-  public async makeClientAuthRequest(url: string, qs: any = {}, options: { accessToken?: string, countryCode?: string, method: string } = { accessToken: undefined, countryCode: 'sg', method: 'get' }) {
+  public async makeClientAuthRequest(
+    url: string,
+    qs: any = {},
+    options: {accessToken?: string; countryCode?: string; method: string} = {
+      accessToken: undefined,
+      countryCode: 'sg',
+      method: 'get',
+    }
+  ) {
     const headers = {
       accept: 'application/json',
       'accept-language': 'en-us',
-      authorization: `Bearer ${options.accessToken || await this.getClientAccessToken(options.countryCode)}`,
+      authorization: `Bearer ${options.accessToken ||
+        (await this.getClientAccessToken(options.countryCode))}`,
       'content-type': 'application/json',
       uuid: uuid(),
       client_id: this.appId,
@@ -260,7 +266,7 @@ export default class CitiOAuth {
 
     return await this.wrap(axios[options.method])(
       url + '?' + querystring.stringify(qs),
-      { headers }
+      {headers}
     )
   }
 }
