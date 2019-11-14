@@ -228,7 +228,7 @@ export default class CitiOAuth {
         const parsed = JSON.parse(cache) as AccessToken
 
         if (parsed.expires_in + parsed.created_at > time) {
-          return cache
+          return parsed
         }
       } catch (ex) {
         this.logger.error('从缓存中读取 AccessToken 时出错：', {ex, cache})
