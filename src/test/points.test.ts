@@ -70,4 +70,14 @@ describe('citi points', () => {
       assert.deepStrictEqual(res, balance)
     })
   })
+
+  describe.skip('create link code', () => {
+    const auth = new CitiOAuth('xxx', 'yyy', 'http://diveintonode.org/')
+
+    it('should get link code', async () => {
+      const res = await auth.Reward.link()
+
+      assert.deepStrictEqual(res, {})
+    })
+  })
 })

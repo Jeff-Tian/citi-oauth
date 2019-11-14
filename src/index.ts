@@ -6,6 +6,9 @@ import CitiReward from './reward'
 import CitiCards from './cards'
 import CitiOnboarding from './onboarding'
 
+const getAccessTokenCacheKey = (url: string, qs: any, endpoint: string) =>
+  `${endpoint}${url}?${querystring.stringify(qs)}`
+
 function getAuthorizeURL(parameters: {
   redirect: string
   scope?: string
@@ -153,7 +156,7 @@ export default class CitiOAuth {
   }
 
   public async getAccessToken(code: string, countryCode: string = 'sg') {
-    const url = `https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/token/${countryCode}/gcb`
+    const url = `/authCode/oauth2/token/${countryCode}/gcb`
     const info = {
       grant_type: 'authorization_code',
       code,
@@ -213,12 +216,28 @@ export default class CitiOAuth {
     return res
   }
 
-  private async processAccessToken(url: string, info: any, options?: {}) {
+  private async processAccessToken(url: string, qs: any, options?: {}) {
     const time = new Date().getTime()
+
+    const cache = await this.getToken(
+      getAccessTokenCacheKey(url, qs, this.endpoint)
+    )
+
+    if (cache) {
+      try {
+        const parsed = JSON.parse(cache) as AccessToken
+
+        if (parsed.expires_in + parsed.created_at > time) {
+          return cache
+        }
+      } catch (ex) {
+        this.logger.error('从缓存中读取 AccessToken 时出错：', {ex, cache})
+      }
+    }
 
     const tokenResult = await wrapper(axios.post, {endpoint: this.endpoint})(
       url,
-      querystring.stringify(info),
+      querystring.stringify(qs),
       {
         ...{
           headers: {
@@ -233,10 +252,18 @@ export default class CitiOAuth {
       }
     )
 
-    return new AccessToken({
+    const res = new AccessToken({
       created_at: time,
       ...tokenResult,
     })
+
+    try {
+      this.saveToken(getAccessTokenCacheKey(url, qs, this.endpoint), res)
+    } catch (ex) {
+      this.logger.error('保存 token 时发生了错误：', {url, res, ex})
+    }
+
+    return res
   }
 
   public wrap(
@@ -260,7 +287,7 @@ export default class CitiOAuth {
       accept: 'application/json',
       'accept-language': 'en-us',
       authorization: `Bearer ${options.accessToken ||
-        (await this.getClientAccessToken(options.countryCode))}`,
+        (await this.getClientAccessToken(options.countryCode)).access_token}`,
       'content-type': 'application/json',
       uuid: uuid(),
       client_id: this.appId,

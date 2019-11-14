@@ -16,11 +16,12 @@
 
 ## 功能列表
 
-- OAuth 授权
-- 获取基本信息
-- 获取积分余额
-- 获取卡片列表
-- 充积分
+- OAuth 授权（示例：https://pa-ca.me/）
+- 获取基本信息（示例：https://pa-ca.me/）
+- 获取积分余额（WIP）
+- 获取卡片列表（示例：https://pa-ca.me/pages/cards/cards）
+- 充积分（WIP）
+- 获取 Onboarding 产品列表（示例：https://pa-ca.me/pages/products/all）
 
 详细参见 [API 文档](https://sandbox.developerhub.citi.com/api/)
 

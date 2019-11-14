@@ -10,9 +10,26 @@ export default class CitiReward {
     this.citi = citi
   }
 
-  public async createLinkCode() {}
+  public async link(countryCode: string = 'US') {
+    const url = `/v1/rewards/linkage`
+    const headers = {
+      accept: 'application/json',
+      'accept-language': 'en-us',
+      authorization: `Bearer ${
+        (await this.citi.getClientAccessToken(countryCode)).access_token
+      }`,
+      businesscode: 'GCB',
+      countrycode: countryCode.toUpperCase(),
+      'content-type': 'application/json',
+      uuid: uuid(),
+      client_id: this.citi.appId,
+    }
+  }
 
-  public async getPointBalance(countryCode: string = 'US', cloakedCreditCardNumber?: string) {
+  public async getPointBalance(
+    countryCode: string = 'US',
+    cloakedCreditCardNumber?: string
+  ) {
     const url = `/v1/rewards/pointBalance`
     const qs: any = {
       cloakedCreditCardNumber,
@@ -27,7 +44,9 @@ export default class CitiReward {
     const headers = {
       accept: 'application/json',
       'accept-language': 'en-us',
-      authorization: `Bearer ${(await this.citi.getClientAccessToken(countryCode)).access_token}`,
+      authorization: `Bearer ${
+        (await this.citi.getClientAccessToken(countryCode)).access_token
+      }`,
       businesscode: 'GCB',
       countrycode: countryCode.toUpperCase(),
       'content-type': 'application/json',
@@ -35,6 +54,9 @@ export default class CitiReward {
       client_id: this.citi.appId,
     }
 
-    return await this.citi.wrap(axios.get)(url + '?' + querystring.stringify(qs), { headers })
+    return await this.citi.wrap(axios.get)(
+      url + '?' + querystring.stringify(qs),
+      {headers}
+    )
   }
 }
