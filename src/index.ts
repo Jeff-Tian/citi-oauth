@@ -294,7 +294,8 @@ export default class CitiOAuth {
     }
 
     return await this.wrap(axios[options.method])(
-      url + '?' + querystring.stringify(qs),
+      url,
+      querystring.stringify(qs),
       {headers}
     )
   }

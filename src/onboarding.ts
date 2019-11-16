@@ -17,13 +17,17 @@ export default class CitiOnboarding {
     )
   }
 
-  public async apply(accessToken?: string, countryCode: string = 'sg') {
+  public async apply(
+    data: any,
+    accessToken?: string,
+    countryCode: string = 'sg'
+  ) {
     const url = `/v1/apac/onboarding/products/unsecured/applications`
 
-    return await this.citi.makeClientAuthRequest(
-      url,
-      {},
-      {method: 'post', accessToken, countryCode}
-    )
+    return await this.citi.makeClientAuthRequest(url, data, {
+      method: 'post',
+      accessToken,
+      countryCode,
+    })
   }
 }

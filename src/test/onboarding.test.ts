@@ -61,7 +61,7 @@ describe('citi onboarding', () => {
 
       mock
         .onPost(
-          /^https:\/\/sandbox\.apihub\.citi\.com\/gcb\/api\/v1\/apac\/onboarding\/products\/unsecured\/applications.+/
+          /^https:\/\/sandbox\.apihub\.citi\.com\/gcb\/api\/v1\/apac\/onboarding\/products\/unsecured\/applications$/
         )
         .replyOnce(200, mockResult)
 
@@ -71,7 +71,73 @@ describe('citi onboarding', () => {
     const auth = new CitiOAuth('xxx', 'yyy', 'http://diveintonode.org/')
 
     it('should apply', async () => {
-      const res = await auth.Onboarding.apply('1234')
+      const res = await auth.Onboarding.apply(
+        {
+          product: {},
+          applicant: {
+            motherMaidenName: 'Lisa',
+            address: {
+              addressType: 'HOME_ADDRESS',
+              addressLine1: '40A Orchard Road',
+              addressLine2: '#99-99 Macdonald House',
+              addressLine3: 'Orchard Avenue 2',
+              addressLine4: 'Street 65',
+              cityName: 'Singapore',
+              state: 'Singapore',
+              postalCode: '345346',
+              provinceCode: 'Singapore',
+              countryCode: 'SG',
+              okToMail: true,
+              residenceDurationInYears: 5,
+              residenceDurationInMonths: 4,
+            },
+            email: {
+              emailAddress: 'matt.hayden@gmail.com',
+              okToEmail: true,
+              isPreferredEmailAddress: true,
+            },
+            phone: {
+              phoneType: 'PRIMARY_MOBILE_NUMBER',
+              phoneCountryCode: '61',
+              areaCode: '02',
+              phoneNumber: '64042321',
+              extension: '23',
+              okToSms: true,
+              okToCall: true,
+            },
+            employmentDetails: {
+              employerName: 'Citi Bank',
+              jobTitle: 'ACCOUNTANT',
+              occupationCode: 'ACCOUNTANT',
+              industryCode: 'CITIBANK_SUB_NON_BANK',
+              employmentDurationInYears: 5,
+              employmentDurationInMonths: 3,
+              employmentStatus: 'EMPLOYED',
+              monthsInPreviousEmployment: 5,
+              yearsInPreviousEmployment: 4,
+              accountantName: 'Javier',
+              accountantFirmName: 'ACME',
+              yearsInIndustry: 5,
+              monthsInIndustry: 6,
+            },
+            identificationDocumentDetails: {
+              idType: 'PASSPORT',
+              idNumber: 'S42258011',
+              idExpiryDate: '2027-04-11',
+              idIssueDate: '2017-04-12',
+              idIssuePlace: 'AU',
+              idIssueState: 'QUEENSLAND',
+              idIssueCountry: 'AU',
+              isPrimaryId: true,
+            },
+            consentDetails: {
+              consentType: 'BUREAU_PULL_CONSENT',
+              isConsentGiven: true,
+            },
+          },
+        },
+        '1234'
+      )
       assert.deepStrictEqual(res, mockResult)
     })
   })
