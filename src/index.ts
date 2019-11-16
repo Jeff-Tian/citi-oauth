@@ -294,10 +294,14 @@ export default class CitiOAuth {
       client_id: this.appId,
     }
 
-    return await this.wrap(axios[options.method])(
+    const res = await this.wrap(axios[options.method])(
       url,
-      querystring.stringify(qs),
+      options.method === 'get' ? querystring.stringify(qs) : JSON.stringify(qs),
       {headers}
     )
+
+    console.log('res ======================= ', res.data)
+
+    return res
   }
 }

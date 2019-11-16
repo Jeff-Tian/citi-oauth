@@ -31,7 +31,10 @@ export const wrapper = (
 
       return res
     } catch (err) {
-      ;(settings.logger || console).error('碰到了错误！')
+      ;(settings.logger || console).error(
+        '碰到了错误！',
+        JSON.stringify(err.response.data)
+      )
       err.request = {}
       err.response = {data: err.response ? err.response.data : null}
       ;(settings.logger || console).error(err)
