@@ -31,10 +31,10 @@ export const wrapper = (
 
       return res
     } catch (err) {
-      console.error('碰到了错误！')
+      ;(settings.logger || console).error('碰到了错误！')
       err.request = {}
       err.response = {data: err.response ? err.response.data : null}
-      console.error(err)
+      ;(settings.logger || console).error(err)
       if (!(err instanceof CitiAPIError)) {
         err.name = 'CitiAPI' + err.name
       }

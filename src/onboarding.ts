@@ -30,4 +30,22 @@ export default class CitiOnboarding {
       countryCode,
     })
   }
+
+  public async getApplicationStatus(
+    applicationId: string,
+    accessToken?: string,
+    countryCode: string = 'sg'
+  ): Promise<any> {
+    const url = `/v1/apac/onboarding/products/unsecured/applications/${applicationId}`
+
+    return await this.citi.makeClientAuthRequest(
+      url,
+      {},
+      {
+        method: 'get',
+        accessToken,
+        countryCode,
+      }
+    )
+  }
 }
