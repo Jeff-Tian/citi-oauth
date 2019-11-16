@@ -189,6 +189,7 @@ export default class CitiOAuth {
 
     return wrapper(axios.get, {
       endpoint: this.endpoint,
+      logger: this.logger,
     })(url, {
       headers: {
         Accept: 'application/json',
@@ -235,22 +236,21 @@ export default class CitiOAuth {
       }
     }
 
-    const tokenResult = await wrapper(axios.post, {endpoint: this.endpoint})(
-      url,
-      querystring.stringify(qs),
-      {
-        ...{
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Basic ${Buffer.from(
-              `${this.appId}:${this.appSecret}`
-            ).toString('base64')}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+    const tokenResult = await wrapper(axios.post, {
+      endpoint: this.endpoint,
+      logger: this.logger,
+    })(url, querystring.stringify(qs), {
+      ...{
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Basic ${Buffer.from(
+            `${this.appId}:${this.appSecret}`
+          ).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        ...options,
-      }
-    )
+      },
+      ...options,
+    })
 
     const res = new AccessToken({
       created_at: time,
@@ -271,6 +271,7 @@ export default class CitiOAuth {
   ) {
     return wrapper(requestFunc, {
       endpoint: this.endpoint,
+      logger: this.logger,
     })
   }
 
