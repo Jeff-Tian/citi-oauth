@@ -37,19 +37,16 @@ export const wrapper = (
         }
       })(res)
     } catch (err) {
-      settings.logger.error(
-        '碰到了错误！',
-        err.response
-      )
-      err.request = {}
-      err.response = { data: err.response ? err.response.data : null }
-      settings.logger.error(err)
+      throw R.tap((err) => {
+        settings.logger.error(
+          '碰到了错误！',
+          err
+        )
 
-      if (!(err instanceof CitiAPIError)) {
-        err.name = 'CitiAPI' + err.name
-      }
-
-      throw err
+        if (!(err instanceof CitiAPIError)) {
+          err.name = 'CitiAPI' + err.name
+        }
+      })(err)
     }
   }
 }
