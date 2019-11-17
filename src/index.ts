@@ -45,7 +45,7 @@ interface IAccessToken {
   access_token: string
   created_at: number
   expires_in: number
-  refresh_token: string
+  refresh_token?: string
   scope: string
   token_type?: string
   consented_on?: number
@@ -56,12 +56,11 @@ export class AccessToken implements IAccessToken {
   public readonly access_token!: string
   public readonly created_at!: number
   public readonly expires_in!: number
-  public readonly refresh_token!: string
+  public readonly refresh_token?: string
   public readonly scope!: string
   public readonly token_type: string | undefined
   public readonly consented_on: number | undefined
-  public readonly refresh_token_expires_in: number | undefined
-
+  public readonly refresh_token_expires_in?: number
   constructor(data: IAccessToken) {
     Object.assign(this, data)
   }
