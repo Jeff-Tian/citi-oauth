@@ -1,10 +1,11 @@
 import axios from 'axios'
 import querystring from 'querystring'
 import uuid from 'uuid/v4'
-import {wrapper} from './util'
+import { wrapper } from './util'
 import CitiReward from './reward'
 import CitiCards from './cards'
 import CitiOnboarding from './onboarding'
+import R from 'ramda'
 
 const getAccessTokenCacheKey = (url: string, qs: any, endpoint: string) =>
   `${endpoint}${url}?${querystring.stringify(qs)}`
@@ -17,7 +18,7 @@ function getAuthorizeURL(parameters: {
   appId: string
   countryCode: string
 }) {
-  const {redirect, scope, state, url, appId, countryCode} = parameters
+  const { redirect, scope, state, url, appId, countryCode } = parameters
   const info: any = {
     response_type: 'code',
     client_id: appId,
@@ -72,7 +73,9 @@ export class AccessToken implements IAccessToken {
     this.consented_on = data.consented_on
     this.refresh_token_expires_in = data.refresh_token_expires_in
 
-    Object.keys(data).map(k => (this[k] = data[k]))
+    R.difference(R.keys(data), ['access_token', 'created_at', 'expires_in', 'refresh_token', 'scope', 'token_type', 'consendted_on', 'refresh_token_expires_in']).forEach(element => {
+      this[element] = data[element]
+    });
   }
 
   public isValid() {
@@ -112,8 +115,8 @@ export default class CitiOAuth {
     this.redirectUri = redirectUri
     this.getToken = !getToken
       ? (openId: string | undefined) => {
-          return Promise.resolve(this.store[openId || ''])
-        }
+        return Promise.resolve(this.store[openId || ''])
+      }
       : getToken
 
     if (!saveToken) {
@@ -171,7 +174,7 @@ export default class CitiOAuth {
     scope: string = '/api'
   ) {
     const url = `/clientCredentials/oauth2/token/${countryCode.toLowerCase()}/gcb`
-    const info = {grant_type: 'client_credentials', scope}
+    const info = { grant_type: 'client_credentials', scope }
 
     return this.processAccessToken(url, info)
   }
@@ -179,7 +182,7 @@ export default class CitiOAuth {
   public async refreshAccessToken(refreshToken: string) {
     const url =
       'https://sandbox.apihub.citi.com/gcb/api/authCode/oauth2/refresh'
-    const info = {grant_type: 'refresh_token', refresh_token: refreshToken}
+    const info = { grant_type: 'refresh_token', refresh_token: refreshToken }
 
     return this.processAccessToken(url, info)
   }
@@ -232,7 +235,7 @@ export default class CitiOAuth {
           return parsed
         }
       } catch (ex) {
-        this.logger.error('从缓存中读取 AccessToken 时出错：', {ex, cache})
+        this.logger.error('从缓存中读取 AccessToken 时出错：', { ex, cache })
       }
     }
 
@@ -260,7 +263,7 @@ export default class CitiOAuth {
     try {
       this.saveToken(getAccessTokenCacheKey(url, qs, this.endpoint), res)
     } catch (ex) {
-      this.logger.error('保存 token 时发生了错误：', {url, res, ex})
+      this.logger.error('保存 token 时发生了错误：', { url, res, ex })
     }
 
     return res
@@ -278,7 +281,7 @@ export default class CitiOAuth {
   public async makeClientAuthRequest(
     url: string,
     qs: any = {},
-    options: {accessToken?: string; countryCode?: string; method: string} = {
+    options: { accessToken?: string; countryCode?: string; method: string } = {
       accessToken: undefined,
       countryCode: 'sg',
       method: 'get',
@@ -294,14 +297,10 @@ export default class CitiOAuth {
       client_id: this.appId,
     }
 
-    const res = await this.wrap(axios[options.method])(
+    return await this.wrap(axios[options.method])(
       url,
       options.method === 'get' ? querystring.stringify(qs) : JSON.stringify(qs),
-      {headers}
+      { headers }
     )
-
-    console.log('res ======================= ', res.data)
-
-    return res
   }
 }

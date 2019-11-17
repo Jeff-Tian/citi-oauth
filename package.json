@@ -25,6 +25,7 @@
   "dependencies": {
     "@types/node": "^11.9.4",
     "axios": "latest",
+    "ramda": "^0.26.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
