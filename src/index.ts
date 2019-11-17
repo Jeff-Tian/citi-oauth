@@ -5,7 +5,6 @@ import { wrapper } from './util'
 import CitiReward from './reward'
 import CitiCards from './cards'
 import CitiOnboarding from './onboarding'
-import R from 'ramda'
 
 const getAccessTokenCacheKey = (url: string, qs: any, endpoint: string) =>
   `${endpoint}${url}?${querystring.stringify(qs)}`
@@ -54,28 +53,17 @@ interface IAccessToken {
 }
 
 export class AccessToken implements IAccessToken {
-  public readonly access_token: string
-  public readonly created_at: number
-  public readonly expires_in: number
-  public readonly refresh_token: string
-  public readonly scope: string
+  public readonly access_token!: string
+  public readonly created_at!: number
+  public readonly expires_in!: number
+  public readonly refresh_token!: string
+  public readonly scope!: string
   public readonly token_type: string | undefined
   public readonly consented_on: number | undefined
   public readonly refresh_token_expires_in: number | undefined
 
   constructor(data: IAccessToken) {
-    this.access_token = data.access_token
-    this.created_at = data.created_at
-    this.expires_in = data.expires_in
-    this.refresh_token = data.refresh_token
-    this.scope = data.scope
-    this.token_type = data.token_type
-    this.consented_on = data.consented_on
-    this.refresh_token_expires_in = data.refresh_token_expires_in
-
-    R.difference(R.keys(data), ['access_token', 'created_at', 'expires_in', 'refresh_token', 'scope', 'token_type', 'consendted_on', 'refresh_token_expires_in']).forEach(element => {
-      this[element] = data[element]
-    });
+    Object.assign(this, data)
   }
 
   public isValid() {
